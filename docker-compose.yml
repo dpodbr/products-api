@@ -9,9 +9,9 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - ./database/data:/var/lib/postgresql/data
+      - postgresdb:/var/lib/postgresql/data
 
-    # For easier development, we add a pgadmin for database inspection.
+  # For easier development, we add a pgadmin for database inspection.
   pgadmin:
     build:
       context: ./database
@@ -31,3 +31,6 @@ services:
       - "${PGADMIN_PORT}:80"
     depends_on:
       - postgresdb
+
+volumes:
+  postgresdb:
