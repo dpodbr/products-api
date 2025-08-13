@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu
 
+# Setup auto-connect to local postgres from env variables.
 cat > /var/lib/pgadmin/pgpass <<EOF
 ${DB_HOST}:${DB_PORT}:*:${DB_USERNAME}:${DB_PASSWORD}
 EOF
@@ -24,5 +25,5 @@ cat > /var/lib/pgadmin/servers.json <<EOF
 EOF
 chmod 600 /var/lib/pgadmin/servers.json
 
-# Chain to the original entrypoint of the base image
+# Chain to the original entrypoint of the base image.
 exec /entrypoint.sh

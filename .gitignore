@@ -32,5 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-# Database data
+### Database data ###
 database/data
+
+### Environment ###
+.env

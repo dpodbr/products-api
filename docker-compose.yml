@@ -1,33 +1,33 @@
 services:
-    postgresdb:
-        image: postgres:17.5-alpine
-        restart: unless-stopped
-        environment:
-            POSTGRES_USER: ${DB_USERNAME}
-            POSTGRES_PASSWORD: ${DB_PASSWORD}
-            POSTGRES_DB: ${DB_NAME}
-        ports:
-            - "${DB_PORT}:5432"
-        volumes:
-            - ./database/data:/var/lib/postgresql/data
+  postgresdb:
+    image: postgres:17.5-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
 
     # For easier development, we add a pgadmin for database inspection.
-    pgadmin:
-        build:
-            context: ./database
-            dockerfile: Dockerfile
-        restart: unless-stopped
-        environment:
-            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-            DB_HOST: ${DB_HOST}
-            DB_PORT: ${DB_PORT}
-            DB_NAME: ${DB_NAME}
-            DB_USERNAME: ${DB_USERNAME}
-            DB_PASSWORD: ${DB_PASSWORD}
-            PGPASSFILE: /var/lib/pgadmin/pgpass
-            PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/servers.json
-        ports:
-            - "${PGADMIN_PORT}:80"
-        depends_on:
-            - postgresdb
+  pgadmin:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      PGPASSFILE: /var/lib/pgadmin/pgpass
+      PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/servers.json
+    ports:
+      - "${PGADMIN_PORT}:80"
+    depends_on:
+      - postgresdb
