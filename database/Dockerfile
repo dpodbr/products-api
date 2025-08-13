@@ -13,10 +13,10 @@ USER root
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# Drop privileges back to the image's default user
+# Drop privileges back to the image default user.
 USER pgadmin
 
-# Execute our script which in turn executes original entrypoint.
+# Execute above script which in turn executes original entrypoint.
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 80
