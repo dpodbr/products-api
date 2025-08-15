@@ -1,0 +1,29 @@
+### GET products
+GET http://localhost:8080/api/v1/products
+
+### GET product by id
+GET http://localhost:8080/api/v1/products/f435f79c-0e4c-4332-8ada-ccb2e3b2819a
+
+### POST product
+POST http://localhost:8080/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "Glasses",
+  "description": "Prescription glasses",
+  "price": 150.00
+}
+
+### PUT product
+PUT http://localhost:8080/api/v1/products/f435f79c-0e4c-4332-8ada-ccb2e3b2819a
+Content-Type: application/json
+
+{
+  "id": "f435f79c-0e4c-4332-8ada-ccb2e3b2819a",
+  "name": "Sunglasses",
+  "description": "Black tinted glasses",
+  "price": 100.00
+}
+
+### DELETE product
+DELETE http://localhost:8080/api/v1/products/f435f79c-0e4c-4332-8ada-ccb2e3b2819a

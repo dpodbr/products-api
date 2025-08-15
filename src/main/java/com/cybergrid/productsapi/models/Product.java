@@ -3,28 +3,30 @@ package com.cybergrid.productsapi.models;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
-import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "products")
 public class Product {
 
   @Id
-  @GeneratedValue
-  @UuidGenerator
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(columnDefinition = "uuid")
   private UUID id;
-  @NotNull
+
+  @NotBlank
   private String name;
   private String description;
+
   @NotNull
   @DecimalMin("0.00")
   @Digits(integer = 15, fraction = 2)
