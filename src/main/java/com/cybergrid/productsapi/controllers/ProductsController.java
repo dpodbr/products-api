@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
+/**
+ * REST controller for managing {@link Product}s.
+ * Note: we're not setting any cache control headers, since we're expecting products
+ * to change often.
+ */
 @RestController
 @RequestMapping("api/v1/products")
 public class ProductsController {
-
   private final ProductsService productsService;
 
   public ProductsController(ProductsService productsService) {
