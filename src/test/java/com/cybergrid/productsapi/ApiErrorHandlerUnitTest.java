@@ -31,12 +31,12 @@ class ApiErrorHandlerUnitTest {
 
     ResponseEntity<Map<String, Object>> response = handler.handle(ex, request);
 
-    assertThat(HttpStatus.NOT_FOUND).isEqualTo(response.getStatusCode());
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     Map<String, Object> body = response.getBody();
     assertThat(body).isNotNull();
-    assertThat(404).isEqualTo(body.get("status"));
-    assertThat("Product not found").isEqualTo(body.get("error"));
-    assertThat("/api/products/123").isEqualTo(body.get("path"));
+    assertThat(body.get("status")).isEqualTo(404);
+    assertThat(body.get("error")).isEqualTo("Product not found");
+    assertThat(body.get("path")).isEqualTo("/api/products/123");
     Object timestamp = body.get("timestamp");
     assertThat(OffsetDateTime.parse((String) timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         .isNotNull();
