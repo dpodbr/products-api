@@ -26,15 +26,18 @@ public class ProductsServiceUnitTest {
   @InjectMocks
   private ProductsService productsService;
 
+  private final Product product = new Product(
+      UUID.randomUUID(),
+      "Name",
+      "Description",
+      new BigDecimal("100.00"));
+
   @Test
   @DisplayName("getProductById should return product if product is found")
   void getProductByIdShouldReturnProduct() {
-    UUID productId = UUID.randomUUID();
-    Product product = new Product(productId, "Name", "Description", new BigDecimal("100.00"));
+    when(productsRepository.findById(product.getId())).thenReturn(Optional.of(product));
 
-    when(productsRepository.findById(productId)).thenReturn(Optional.of(product));
-
-    Product result = productsService.getProductById(productId);
+    Product result = productsService.getProductById(product.getId());
 
     assertThat(result).isEqualTo(product);
   }
@@ -42,10 +45,9 @@ public class ProductsServiceUnitTest {
   @Test
   @DisplayName("getProductById should throw if product not found")
   void getProductByIdShouldThrowIfProductNotFound() {
-    UUID productId = UUID.randomUUID();
-    when(productsRepository.findById(productId)).thenReturn(Optional.empty());
+    when(productsRepository.findById(product.getId())).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> productsService.getProductById(productId))
+    assertThatThrownBy(() -> productsService.getProductById(product.getId()))
         .isInstanceOf(ResponseStatusException.class)
         .hasMessageContaining("Product not found");
   }
@@ -53,12 +55,9 @@ public class ProductsServiceUnitTest {
   @Test
   @DisplayName("updateProduct should update product if product is found")
   void updateProductShouldUpdateProduct() {
-    UUID productId = UUID.randomUUID();
-    Product product = new Product(productId, "Name", "Description", new BigDecimal("100.00"));
+    when(productsRepository.existsById(product.getId())).thenReturn(true);
 
-    when(productsRepository.existsById(productId)).thenReturn(true);
-
-    productsService.updateProduct(productId, product);
+    productsService.updateProduct(product.getId(), product);
 
     verify(productsRepository).save(product);
   }
@@ -66,12 +65,9 @@ public class ProductsServiceUnitTest {
   @Test
   @DisplayName("updateProduct should throw if product not found")
   void updateProductShouldThrowIfProductNotFound() {
-    UUID productId = UUID.randomUUID();
-    Product product = new Product(productId, "Name", "Description", new BigDecimal("100.00"));
+    when(productsRepository.existsById(product.getId())).thenReturn(false);
 
-    when(productsRepository.existsById(productId)).thenReturn(false);
-
-    assertThatThrownBy(() -> productsService.updateProduct(productId, product))
+    assertThatThrownBy(() -> productsService.updateProduct(product.getId(), product))
         .isInstanceOf(ResponseStatusException.class)
         .hasMessageContaining("Product not found");
   }
@@ -79,23 +75,19 @@ public class ProductsServiceUnitTest {
   @Test
   @DisplayName("deleteProduct should delete product if product is found")
   void deleteProductShouldDeleteProduct() {
-    UUID productId = UUID.randomUUID();
+    when(productsRepository.existsById(product.getId())).thenReturn(true);
 
-    when(productsRepository.existsById(productId)).thenReturn(true);
+    productsService.deleteProduct(product.getId());
 
-    productsService.deleteProduct(productId);
-
-    verify(productsRepository).deleteById(productId);
+    verify(productsRepository).deleteById(product.getId());
   }
 
   @Test
   @DisplayName("deleteProduct should throw if product not found")
   void deleteProductShouldThrowIfProductNotFound() {
-    UUID productId = UUID.randomUUID();
+    when(productsRepository.existsById(product.getId())).thenReturn(false);
 
-    when(productsRepository.existsById(productId)).thenReturn(false);
-
-    assertThatThrownBy(() -> productsService.deleteProduct(productId))
+    assertThatThrownBy(() -> productsService.deleteProduct(product.getId()))
         .isInstanceOf(ResponseStatusException.class)
         .hasMessageContaining("Product not found");
   }

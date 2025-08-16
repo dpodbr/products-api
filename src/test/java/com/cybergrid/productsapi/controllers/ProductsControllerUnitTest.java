@@ -24,23 +24,23 @@ public class ProductsControllerUnitTest {
   @InjectMocks
   private ProductsController productsController;
 
+  private final Product product = new Product(
+      UUID.randomUUID(),
+      "Name",
+      "Description",
+      new BigDecimal("100.00"));
+
   @Test
   @DisplayName("updateProduct should call service if product and path Id match")
   void updateProductShouldCallServiceIfProductAndPathIdMatch() {
-    UUID productId = UUID.randomUUID();
-    Product product = new Product(productId, "Name", "Description", new BigDecimal("100.00"));
+    productsController.updateProduct(product.getId(), product);
 
-    productsController.updateProduct(productId, product);
-
-    verify(productsService).updateProduct(productId, product);
+    verify(productsService).updateProduct(product.getId(), product);
   }
 
   @Test
   @DisplayName("updateProduct should throw if product and path Id do not match")
   void updateProductShouldThrowIfProductAndPathIdDoNotMatch() {
-    UUID productId = UUID.randomUUID();
-    Product product = new Product(productId, "Name", "Description", new BigDecimal("100.00"));
-
     assertThatThrownBy(() -> productsController.updateProduct(UUID.randomUUID(), product))
         .isInstanceOf(ResponseStatusException.class)
         .hasMessageContaining("ID in path and body don't match");
