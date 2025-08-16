@@ -34,7 +34,7 @@ class ApiErrorHandlerUnitTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     Map<String, Object> body = response.getBody();
     assertThat(body).isNotNull();
-    assertThat(body.get("status")).isEqualTo(404);
+    assertThat(body.get("status")).isEqualTo(HttpStatus.NOT_FOUND.value());
     assertThat(body.get("error")).isEqualTo("Product not found");
     assertThat(body.get("path")).isEqualTo("/api/products/123");
     Object timestamp = body.get("timestamp");
