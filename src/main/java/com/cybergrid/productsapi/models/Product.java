@@ -6,16 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.UUID;
+import org.hibernate.annotations.Check;
 
 @Entity
 @Table(name = "products")
+@Check(constraints = "price >= 0")
 public class Product {
 
   @Id
@@ -23,13 +20,11 @@ public class Product {
   @Column(columnDefinition = "uuid")
   private UUID id;
 
-  @NotBlank
+  @Column(nullable = false)
   private String name;
   private String description;
 
-  @NotNull
-  @DecimalMin("0.00")
-  @Digits(integer = 15, fraction = 2)
+  @Column(nullable = false, precision = 15, scale = 2)
   private BigDecimal price;
 
   public Product() {
@@ -72,22 +67,5 @@ public class Product {
 
   public void setPrice(BigDecimal price) {
     this.price = price;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Product product = (Product) o;
-    return Objects.equals(id, product.id)
-        && Objects.equals(name, product.name)
-        && Objects.equals(description, product.description)
-        && Objects.equals(price, product.price);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, name, description, price);
   }
 }

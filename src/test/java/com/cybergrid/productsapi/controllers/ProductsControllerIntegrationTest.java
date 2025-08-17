@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import com.cybergrid.productsapi.dto.ProductRequest;
 import com.cybergrid.productsapi.models.Product;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
@@ -31,8 +32,7 @@ public class ProductsControllerIntegrationTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  private final Product product = new Product(
-      null,
+  private final ProductRequest productRequest = new ProductRequest(
       "Name",
       "Description",
       new BigDecimal("100.00"));
@@ -40,46 +40,45 @@ public class ProductsControllerIntegrationTest {
   @Test
   @DisplayName("createProduct should create a new product")
   void createProductShouldCreateProduct() throws Exception {
-    MockHttpServletResponse response = postProductHelper(product);
+    MockHttpServletResponse response = postProductHelper(productRequest);
     assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
 
     String body = response.getContentAsString();
     assertThat(body).isNotBlank();
-    Product savedProduct = objectMapper.readValue(body, Product.class);
+    Product product = objectMapper.readValue(body, Product.class);
 
     // Validate the Location header and returned product.
-    UUID savedProductId = savedProduct.getId();
-    assertThat(savedProductId).isNotNull();
-    assertThat(response.getHeader("Location")).contains("/api/v1/products/" + savedProductId);
+    UUID productId = product.getId();
+    assertThat(productId).isNotNull();
+    assertThat(response.getHeader("Location")).contains("/api/v1/products/" + productId);
 
-    assertThat(savedProduct.getName()).isEqualTo(product.getName());
-    assertThat(savedProduct.getDescription()).isEqualTo(product.getDescription());
-    assertThat(savedProduct.getPrice()).isEqualByComparingTo(product.getPrice());
+    assertThat(product.getName()).isEqualTo(productRequest.getName());
+    assertThat(product.getDescription()).isEqualTo(productRequest.getDescription());
+    assertThat(product.getPrice()).isEqualByComparingTo(productRequest.getPrice());
   }
 
   @Test
   @DisplayName("createProduct should validate product parameters")
   void createProductShouldValidateProductParameters() throws Exception {
-    Product invalidProduct = new Product(
-        null,
+    ProductRequest invalidProductRequest = new ProductRequest(
         "",
         null,
         new BigDecimal("-5.00"));
 
-    MockHttpServletResponse response = postProductHelper(invalidProduct);
+    MockHttpServletResponse response = postProductHelper(invalidProductRequest);
     assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     // Fix the name so it's not blank.
-    invalidProduct.setName("Name");
+    invalidProductRequest.setName("Name");
 
-    response = postProductHelper(invalidProduct);
+    response = postProductHelper(invalidProductRequest);
     assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     // Fix price so it's not negative.
-    invalidProduct.setPrice(new BigDecimal("0.00"));
+    invalidProductRequest.setPrice(new BigDecimal("0.00"));
 
     // All fields are now valid, so we should be able to create the product.
-    response = postProductHelper(invalidProduct);
+    response = postProductHelper(invalidProductRequest);
     assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
   }
 
@@ -87,8 +86,8 @@ public class ProductsControllerIntegrationTest {
   @DisplayName("getProducts should return all products")
   void getProductsShouldReturnAllProducts() throws Exception {
     // Create a few products so we can get them back.
-    MockHttpServletResponse firstResponse = postProductHelper(product);
-    MockHttpServletResponse secondResponse = postProductHelper(product);
+    MockHttpServletResponse firstResponse = postProductHelper(productRequest);
+    MockHttpServletResponse secondResponse = postProductHelper(productRequest);
 
     // Get the Ids of the created products.
     UUID productId1 = objectMapper
@@ -114,13 +113,13 @@ public class ProductsControllerIntegrationTest {
   @DisplayName("getProductById should return product if product is found")
   void getProductByIdShouldReturnProduct() throws Exception {
     // Create a product so we can get it back.
-    MockHttpServletResponse postResponse = postProductHelper(product);
-    Product savedProduct = objectMapper.readValue(
+    MockHttpServletResponse postResponse = postProductHelper(productRequest);
+    Product product = objectMapper.readValue(
         postResponse.getContentAsString(),
         Product.class);
 
     // Validate returned product.
-    getProductAndValidate(savedProduct.getId(), product);
+    getProductAndValidate(product.getId(), productRequest);
   }
 
   @Test
@@ -135,30 +134,29 @@ public class ProductsControllerIntegrationTest {
   @DisplayName("updateProduct should update product if product is found")
   void updateProductShouldUpdateProduct() throws Exception {
     // Create a product so we can update it.
-    MockHttpServletResponse postResponse = postProductHelper(product);
+    MockHttpServletResponse postResponse = postProductHelper(productRequest);
     UUID productId = objectMapper
         .readValue(postResponse.getContentAsString(), Product.class)
         .getId();
 
     // Update the product.
-    Product updatedProduct = new Product(
-        null,
+    ProductRequest updateProductRequest = new ProductRequest(
         "Updated Name",
         "Updated Description",
         new BigDecimal("200.00")
     );
 
-    MockHttpServletResponse updateResponse = updateProductHelper(productId, updatedProduct);
+    MockHttpServletResponse updateResponse = updateProductHelper(productId, updateProductRequest);
     assertThat(updateResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
 
     // Validate returned product.
-    getProductAndValidate(productId, updatedProduct);
+    getProductAndValidate(productId, updateProductRequest);
   }
 
   @Test
   @DisplayName("updateProduct should return 404 if product is not found")
   void updateProductShouldReturn404IfProductNotFound() throws Exception {
-    MockHttpServletResponse response = updateProductHelper(UUID.randomUUID(), product);
+    MockHttpServletResponse response = updateProductHelper(UUID.randomUUID(), productRequest);
     assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     assertThat(response.getContentAsString()).contains("Product not found");
   }
@@ -167,7 +165,7 @@ public class ProductsControllerIntegrationTest {
   @DisplayName("deleteProduct should delete product if product is found")
   void deleteProductShouldDeleteProduct() throws Exception {
     // Create a product so we can delete it.
-    MockHttpServletResponse postResponse = postProductHelper(product);
+    MockHttpServletResponse postResponse = postProductHelper(productRequest);
     UUID productId = objectMapper
         .readValue(postResponse.getContentAsString(), Product.class)
         .getId();
@@ -189,12 +187,12 @@ public class ProductsControllerIntegrationTest {
     assertThat(response.getContentAsString()).contains("Product not found");
   }
 
-  private MockHttpServletResponse postProductHelper(Product product) throws Exception {
+  private MockHttpServletResponse postProductHelper(ProductRequest request) throws Exception {
     MvcResult result = mockMvc
         .perform(
           post("/api/v1/products")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(product)))
+            .content(objectMapper.writeValueAsString(request)))
         .andDo(print())
         .andReturn();
 
@@ -210,12 +208,14 @@ public class ProductsControllerIntegrationTest {
     return result.getResponse();
   }
 
-  private MockHttpServletResponse updateProductHelper(UUID id, Product product) throws Exception {
+  private MockHttpServletResponse updateProductHelper(
+      UUID id,
+      ProductRequest request) throws Exception {
     MvcResult result = mockMvc
         .perform(
           put("/api/v1/products/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(product)))
+            .content(objectMapper.writeValueAsString(request)))
         .andDo(print())
         .andReturn();
 
@@ -232,17 +232,19 @@ public class ProductsControllerIntegrationTest {
     return result.getResponse();
   }
 
-  private void getProductAndValidate(UUID productId, Product validateWithProduct) throws Exception {
+  private void getProductAndValidate(
+      UUID productId,
+      ProductRequest request) throws Exception {
     MockHttpServletResponse getResponse = getProductHelper(productId);
     assertThat(getResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
     assertThat(getResponse.getContentAsString()).isNotBlank();
 
-    Product fetchedProduct = objectMapper.readValue(
+    Product product = objectMapper.readValue(
         getResponse.getContentAsString(),
         Product.class);
-    assertThat(fetchedProduct.getId()).isEqualTo(productId);
-    assertThat(fetchedProduct.getName()).isEqualTo(validateWithProduct.getName());
-    assertThat(fetchedProduct.getDescription()).isEqualTo(validateWithProduct.getDescription());
-    assertThat(fetchedProduct.getPrice()).isEqualByComparingTo(validateWithProduct.getPrice());
+    assertThat(product.getId()).isEqualTo(productId);
+    assertThat(product.getName()).isEqualTo(request.getName());
+    assertThat(product.getDescription()).isEqualTo(request.getDescription());
+    assertThat(product.getPrice()).isEqualByComparingTo(request.getPrice());
   }
 }

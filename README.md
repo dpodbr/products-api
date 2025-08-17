@@ -5,7 +5,7 @@ There is no auth required (API is open to everyone) since it was not a requireme
 
 ## Installation instructions
 1. Copy the provided `.env.example` to `.env`. These are the environment variables that are read by the application (you can leave defaults)
-   * Be sure to run `docker compose build` so the changes in .env are copied to container
+   * Be sure to run `docker compose build` so the changes in `.env` are copied to container
 2. Run `docker compose up -d postgresdb productsapi`
    * Optionally start `pgadmin` for database Web UI: `docker compose up -d pgadmin`
    * Or just run `docker compose up -d` to bring all services up
@@ -17,7 +17,7 @@ There is no auth required (API is open to everyone) since it was not a requireme
 ## Local development instructions
 1. Copy the provided `.env.example` to `.env`
 2. Change `DB_HOST` in `.env` to `localhost`
-   * Be sure to run `docker compose build` so the changes in .env are copied to container
+   * Be sure to run `docker compose build` so the changes in `.env` are copied to container
 3. Start up `postgresdb` and (optionally) `pgadmin` or provide your own PostgresSQL database `docker compose up -d postgresdb pgadmin`
 4. Project was built with IntelliJ IDEA, so it's recommended to use it for development.
 5. There are 3 run configurations provided:
