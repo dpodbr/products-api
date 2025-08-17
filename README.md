@@ -21,7 +21,9 @@ There is no auth required (API is open to everyone) since it was not a requireme
 3. Start up `postgresdb` and (optionally) `pgadmin` or provide your own PostgresSQL database `docker compose up -d postgresdb pgadmin`
 4. Project was built with IntelliJ IDEA, so it's recommended to use it for development.
 5. There are 3 run configurations provided:
-   * ProductsAPIApplication—runs the application
+   * `ProductsAPIApplication` — runs the application
      * You can use some predefined requests for testing in `src/test/java/ProductsRequests.http` or use API documentation from above to test endpoints.
-   * All Unit Tests—runs all unit tests
-   * All Integration Tests—runs all integration tests
+   * `All Unit Tests` — runs all unit tests
+     * Choose `Run 'All Unit Tests' with Coverage` to run unit tests with coverage report
+   * `All Integration Tests` — runs all integration tests
+     * Choose `Run 'All Integration Tests' with Coverage` to run integration tests with coverage report
