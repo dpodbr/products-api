@@ -3,7 +3,7 @@ set -eu
 
 # Setup auto-connect to local postgres from env variables.
 cat > /var/lib/pgadmin/pgpass <<EOF
-${DB_HOST}:${DB_PORT}:*:${DB_USERNAME}:${DB_PASSWORD}
+postgresdb:${DB_PORT}:*:${DB_USERNAME}:${DB_PASSWORD}
 EOF
 chmod 600 /var/lib/pgadmin/pgpass
 
@@ -13,7 +13,7 @@ cat > /var/lib/pgadmin/servers.json <<EOF
     "1": {
       "Name": "Local Postgres",
       "Group": "Servers",
-      "Host": "${DB_HOST}",
+      "Host": "postgresdb",
       "Port": ${DB_PORT},
       "MaintenanceDB": "postgres",
       "Username": "${DB_USERNAME}",
