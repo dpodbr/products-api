@@ -21,8 +21,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * REST controller for managing {@link Product}s.
- * Note: we're not setting any cache control headers, since we're expecting products
+ *
+ * <p>We're not setting any cache control headers, since we're expecting products
  * to change often.
+ *
+ * <p>Since the Product is a simple enough entity and contains no secrets,
+ * we can use it directly for request/response bodies instead of creating a separate Product DTO
+ * and then mapping it into the appropriate DB entity.
  */
 @RestController
 @RequestMapping("api/v1/products")
@@ -43,8 +48,6 @@ public class ProductsController {
     return productsService.getProductById(id);
   }
 
-  // For more complex requests we usually accept a Product DTO from a client
-  // and map it into the appropriate entity before persisting it.
   @PostMapping
   public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
     // Validation is performed by Spring automatically.
@@ -56,7 +59,7 @@ public class ProductsController {
         .buildAndExpand(savedProduct.getId())
         .toUri();
 
-    // 201 Created with a Location header and ID in the body.
+    // return 201 Created with a Location header and product in response body.
     return ResponseEntity.created(location).body(savedProduct);
   }
 

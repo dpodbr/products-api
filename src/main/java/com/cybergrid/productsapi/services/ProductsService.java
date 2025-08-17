@@ -17,8 +17,6 @@ public class ProductsService {
   }
 
   public List<Product> getProducts() {
-    // For more complex entities we map database objects into DTO to filter out sensitive fields,
-    // before returning it to client. In this case product is simple enough to be returned as is.
     return productsRepository.findAll();
   }
 
