@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.cybergrid.productsapi.dto.ProductRequest;
-import com.cybergrid.productsapi.models.Product;
+import com.cybergrid.productsapi.dto.ProductResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -45,16 +45,16 @@ public class ProductsControllerIntegrationTest {
 
     String body = response.getContentAsString();
     assertThat(body).isNotBlank();
-    Product product = objectMapper.readValue(body, Product.class);
+    ProductResponse productResponse = objectMapper.readValue(body, ProductResponse.class);
 
     // Validate the Location header and returned product.
-    UUID productId = product.getId();
+    UUID productId = productResponse.getId();
     assertThat(productId).isNotNull();
     assertThat(response.getHeader("Location")).contains("/api/v1/products/" + productId);
 
-    assertThat(product.getName()).isEqualTo(productRequest.getName());
-    assertThat(product.getDescription()).isEqualTo(productRequest.getDescription());
-    assertThat(product.getPrice()).isEqualByComparingTo(productRequest.getPrice());
+    assertThat(productResponse.getName()).isEqualTo(productRequest.getName());
+    assertThat(productResponse.getDescription()).isEqualTo(productRequest.getDescription());
+    assertThat(productResponse.getPrice()).isEqualByComparingTo(productRequest.getPrice());
   }
 
   @Test
@@ -91,10 +91,10 @@ public class ProductsControllerIntegrationTest {
 
     // Get the Ids of the created products.
     UUID productId1 = objectMapper
-        .readValue(firstResponse.getContentAsString(), Product.class)
+        .readValue(firstResponse.getContentAsString(), ProductResponse.class)
         .getId();
     UUID productId2 = objectMapper
-        .readValue(secondResponse.getContentAsString(), Product.class)
+        .readValue(secondResponse.getContentAsString(), ProductResponse.class)
         .getId();
 
     // Validate we get back at least the two products we created.
@@ -114,12 +114,12 @@ public class ProductsControllerIntegrationTest {
   void getProductByIdShouldReturnProduct() throws Exception {
     // Create a product so we can get it back.
     MockHttpServletResponse postResponse = postProductHelper(productRequest);
-    Product product = objectMapper.readValue(
+    ProductResponse productResponse = objectMapper.readValue(
         postResponse.getContentAsString(),
-        Product.class);
+        ProductResponse.class);
 
     // Validate returned product.
-    getProductAndValidate(product.getId(), productRequest);
+    getProductAndValidate(productResponse.getId(), productRequest);
   }
 
   @Test
@@ -136,7 +136,7 @@ public class ProductsControllerIntegrationTest {
     // Create a product so we can update it.
     MockHttpServletResponse postResponse = postProductHelper(productRequest);
     UUID productId = objectMapper
-        .readValue(postResponse.getContentAsString(), Product.class)
+        .readValue(postResponse.getContentAsString(), ProductResponse.class)
         .getId();
 
     // Update the product.
@@ -167,7 +167,7 @@ public class ProductsControllerIntegrationTest {
     // Create a product so we can delete it.
     MockHttpServletResponse postResponse = postProductHelper(productRequest);
     UUID productId = objectMapper
-        .readValue(postResponse.getContentAsString(), Product.class)
+        .readValue(postResponse.getContentAsString(), ProductResponse.class)
         .getId();
 
     // Delete the product.
@@ -239,12 +239,12 @@ public class ProductsControllerIntegrationTest {
     assertThat(getResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
     assertThat(getResponse.getContentAsString()).isNotBlank();
 
-    Product product = objectMapper.readValue(
+    ProductResponse productResponse = objectMapper.readValue(
         getResponse.getContentAsString(),
-        Product.class);
-    assertThat(product.getId()).isEqualTo(productId);
-    assertThat(product.getName()).isEqualTo(request.getName());
-    assertThat(product.getDescription()).isEqualTo(request.getDescription());
-    assertThat(product.getPrice()).isEqualByComparingTo(request.getPrice());
+        ProductResponse.class);
+    assertThat(productResponse.getId()).isEqualTo(productId);
+    assertThat(productResponse.getName()).isEqualTo(request.getName());
+    assertThat(productResponse.getDescription()).isEqualTo(request.getDescription());
+    assertThat(productResponse.getPrice()).isEqualByComparingTo(request.getPrice());
   }
 }
