@@ -2,6 +2,7 @@ package com.cybergrid.productsapi.controllers;
 
 import com.cybergrid.productsapi.dto.ProductRequest;
 import com.cybergrid.productsapi.dto.ProductResponse;
+import com.cybergrid.productsapi.mappers.ProductMapper;
 import com.cybergrid.productsapi.models.Product;
 import com.cybergrid.productsapi.services.ProductsService;
 import jakarta.validation.Valid;
@@ -38,21 +39,21 @@ public class ProductsController {
   public List<ProductResponse> getProducts() {
     return productsService.getProducts()
         .stream()
-        .map(this::mapDbEntityToResponse)
+        .map(ProductMapper::toResponse)
         .toList();
   }
 
   @GetMapping("{id}")
   public ProductResponse getProductById(@PathVariable UUID id) {
-    return mapDbEntityToResponse(productsService.getProductById(id));
+    return ProductMapper.toResponse(productsService.getProductById(id));
   }
 
   // Validation is handled by Spring Boot (@Valid).
   @PostMapping
   public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest productDto) {
-    Product product = mapRequestToDbEntity(productDto);
+    Product product = ProductMapper.toEntity(productDto);
 
-    ProductResponse response = mapDbEntityToResponse(productsService.createProduct(product));
+    ProductResponse response = ProductMapper.toResponse(productsService.createProduct(product));
 
     URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
@@ -66,7 +67,7 @@ public class ProductsController {
 
   @PutMapping("{id}")
   public void updateProduct(@PathVariable UUID id, @Valid @RequestBody ProductRequest productDto) {
-    Product product = mapRequestToDbEntity(productDto);
+    Product product = ProductMapper.toEntity(productDto);
 
     productsService.updateProduct(id, product);
   }
@@ -74,21 +75,5 @@ public class ProductsController {
   @DeleteMapping("{id}")
   public void deleteProduct(@PathVariable UUID id) {
     productsService.deleteProduct(id);
-  }
-
-  private Product mapRequestToDbEntity(ProductRequest productDto) {
-    return new Product(
-        null,
-        productDto.getName(),
-        productDto.getDescription(),
-        productDto.getPrice());
-  }
-
-  private ProductResponse mapDbEntityToResponse(Product product) {
-    return new ProductResponse(
-      product.getId(),
-      product.getName(),
-      product.getDescription(),
-      product.getPrice());
   }
 }
